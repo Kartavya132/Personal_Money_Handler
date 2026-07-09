@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod as ab
+from __init__ import *
 
 
 class mains(ABC):

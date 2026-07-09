@@ -1,3 +1,6 @@
+from __init__ import *
+
+
 def main_prompts(*args):
     try:
         prompt = args[0].lower()

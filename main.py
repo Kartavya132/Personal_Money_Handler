@@ -1,4 +1,4 @@
-import venv.__init__ as it
+from Personal_money_handler.__init__ import *
 
 
 def main():
