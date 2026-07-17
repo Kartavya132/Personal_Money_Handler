@@ -1,12 +1,13 @@
-from __init__ import *
+import sys
 
 
-def main_prompts(*args):
-    try:
-        prompt = args[0].lower()
-    except:
-        print("Please Enter proper input")
-    if (
+def main_prompts(prompt):
+    prompt = prompt.lower()
+    if "exit" in prompt or "out" in prompt:
+        print("Thank you for using us!!\nGood Bye!!")
+        sys.exit()
+
+    elif (
         ("add" in prompt and "account" in prompt)
         or ("make" in prompt and "account" in prompt)
         or ("new" in prompt and "account" in prompt)
@@ -16,6 +17,7 @@ def main_prompts(*args):
 
     elif (
         ("account" in prompt and "detail" in prompt)
+        or ("see" in prompt and "account" in prompt)
         or ("view" in prompt and "account" in prompt)
         or ("check" in prompt and "account" in prompt)
     ):
@@ -25,6 +27,8 @@ def main_prompts(*args):
         ("add" in prompt and "salary" in prompt)
         or ("new" in prompt and "salary" in prompt)
         or ("add" in prompt and "income" in prompt)
+        or ("save" in prompt and "salary" in prompt)
+        or ("save" in prompt and "income" in prompt)
         or ("renew" in prompt and "income" in prompt)
         or ("renew" in prompt and "salary" in prompt)
     ):
@@ -54,7 +58,28 @@ def main_prompts(*args):
     ):
         pass
 
-    elif "exit" in prompt or "out" in prompt:
+    elif "goal" in prompt or "target" in prompt:
+        pass
+
+    elif (
+        (
+            "total" in prompt
+            and ("amount" in prompt or "ammount" in prompt or "amt" in prompt)
+            and "add" in prompt
+        )
+        or (
+            "save" in prompt
+            and "total" in prompt
+            and ("amount" in prompt or "amt" in prompt)
+        )
+        or (
+            "edit" in prompt
+            and "total" in prompt
+            and ("amount" in prompt or "ammount" in prompt)
+        )
+        or ("renew" in prompt and "total" in prompt and "value" in prompt)
+        or ("add" in prompt and "total" in prompt and "value" in prompt)
+    ):
         pass
 
     else:

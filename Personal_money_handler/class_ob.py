@@ -1,29 +1,30 @@
-from __init__ import *
+from abc import ABC, abstractmethod
 
 
 class mains(ABC):
-    @ab
+    @abstractmethod
     def add_acc(self):
         pass
 
-    @ab
+    @abstractmethod
     def acc_detail(self):
         pass
 
-    @ab
+    @abstractmethod
     def add_d(self):
         pass
 
-    @ab
+    @abstractmethod
     def predict(self):
         pass
 
-    @ab
+    @abstractmethod
     def plots_build(self):
         pass
 
 
 class Account(mains):
+
     def add_acc(self):
         pass
 
