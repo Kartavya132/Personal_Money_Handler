@@ -15,9 +15,7 @@ def load_data():
     target_path = DATA_DIR / "target.csv"
 
     if acc_path.exists() and acc_path.stat().st_size > 0:
-        with acc_path.open("r", encoding="utf-8") as f:
-            acc_data = json.load(f)
-            acc_data = pd.DataFrame(acc_data)
+        acc_data = pd.read_csv(money_path)
     else:
         acc_data = pd.DataFrame()
     if money_path.exists() and money_path.stat().st_size > 0:
@@ -32,10 +30,31 @@ def load_data():
 
 def add_acc():
     chars = "abcdefghijklmnopqrstuvwxyz"
-    chars = chars.upper()
+    chars += chars.upper()
     acc = random.choices(chars, 2) + random.randint(0, 9)
-    while acc in chars:
-        pass
+    while not acc in acc_data["acc"]:
+        acc = random.choices(chars, 2) + random.randint(0, 9)
+    name = input("Enter your name : ").strip()
+    while not name:
+        name = input("Enter your proper name : ").strip()
+    while True:
+        password = input("Enter what password you want : ")
+        if password == input("Retype the password : "):
+            break
+        else:
+            print("Incorrect password")
+    while True:
+        prof = input("Enter your proffession : ")
+        if prof:
+            break
+        else:
+            print("Enter the valid value.")
+    while True:
+        try:
+            total_ammount = int(input("Enter the total ammount of money : "))
+            break
+        except ValueError:
+            print("Enter the integer")
 
 
 def chan_acc():
