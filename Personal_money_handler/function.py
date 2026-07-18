@@ -1,12 +1,10 @@
 import datetime
 import random
-
 import pandas as pd
-
 from . import data as dt
 
 acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
-money_data = dt.empty_frame()
+money_data = dt.empty_frame(dt.MONEY_COLUMNS)
 target_data = dt.empty_frame()
 
 
@@ -16,8 +14,28 @@ def load():
     return acc_data, money_data, target_data
 
 
+def check_acc():
+    global acc_data, current_acc
+    if acc_data.empty:
+        print("There is no account add one")
+        return False
+    while True:
+        acc = input("Enter your account name : ").strip()
+        if not acc in {str(value) for value in acc_data["acc"].astype(str).tolist()}:
+            print("There is such account")
+            return False
+        for _ in range(0, 3):
+            password = input("Enter the password : ")
+            if password == acc_data.loc[acc_data["acc"] == acc, "password"].values[0]:
+                current_acc = acc
+                return True
+            print("Invalid password")
+        print("You tried many times")
+        return False
+
+
 def add_acc():
-    global acc_data
+    global acc_data, money_data
     if not isinstance(acc_data, pd.DataFrame):
         acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
 
@@ -81,99 +99,28 @@ def add_acc():
         "profession": prof,
         "total_m": total_ammount,
         "created_on": datetime.datetime.now(),
-        "steps": 0,
+        "steps": 1,
     }
     dt.save_account(acc_data)
+    money_data.loc[len(money_data)] = {
+        "ID": len(money_data) + 1,
+        "acc": acc,
+        "type": "total",
+        "date": datetime.datetime.now(),
+        "steps": 1,
+        "ammount": total_ammount,
+    }
+    dt.save_money(money_data)
     print(f"Your account no. ::- {acc}")
     return acc_data
 
 
 def chan_acc():
     global acc_data
-    if acc_data.empty:
-        print("No account found")
-        return acc_data
-
-    target_acc = input("Enter account no. to change : ").strip()
-    row = acc_data[acc_data["acc"].astype(str) == target_acc]
-    if row.empty:
-        print("Account not found")
-        return acc_data
-
-    field = (
-        input("Enter field to change (name/password/profession/total_m) : ")
-        .strip()
-        .lower()
-    )
-    mapping = {
-        "name": "name",
-        "password": "password",
-        "profession": "profession",
-        "total_m": "total_m",
-    }
-    if field not in mapping:
-        print("Wrong field")
-        return acc_data
-
-    value = input(f"Enter new {field} : ")
-    if field == "total_m":
-        try:
-            value = int(value)
-        except ValueError:
-            print("Enter the integer")
-            return acc_data
-
-    acc_data.loc[row.index[0], mapping[field]] = value
-    dt.save_account(acc_data)
-    print("Account updated")
-    return acc_data
-
-
-def inp_salary():
     pass
 
 
-def salary_track():
-    pass
-
-
-def show_sal_plot():
-    pass
-
-
-def inp_ex():
-    pass
-
-
-def ex_track():
-    pass
-
-
-def show_ex_plot():
-    pass
-
-
-def give_saving():
-    pass
-
-
-def advice():
-    pass
-
-
-def show_combine_plot():
-    pass
-
-
-def total_ammount():
-    pass
-
-
-def total_track():
-    pass
-
-
-def show_total_plot():
+def delete_acc():
     pass
 
 

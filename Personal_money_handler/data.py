@@ -15,6 +15,7 @@ ACCOUNT_COLUMNS = [
     "created_on",
     "steps",
 ]
+MONEY_COLUMNS = ["ID", "acc", "type", "date", "steps", "ammount"]
 
 
 def empty_frame(columns=None):
@@ -35,7 +36,7 @@ def load_csv(path, columns=None):
 def load_data():
     return (
         load_csv(DATA_DIR / "account.csv", ACCOUNT_COLUMNS),
-        load_csv(DATA_DIR / "money.csv"),
+        load_csv(DATA_DIR / "money.csv", MONEY_COLUMNS),
         load_csv(DATA_DIR / "target.csv"),
     )
 
@@ -57,3 +58,8 @@ def save_money(frame):
 
 def save_target(frame):
     return save_csv("target", frame)
+
+
+if __name__ == "__main__":
+    print("OOPS came in wrong place!!\nGo to main.py")
+    exit()

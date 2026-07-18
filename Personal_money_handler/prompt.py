@@ -1,4 +1,5 @@
 import sys
+from . import function as fnf
 
 
 def main_prompts(prompt):
@@ -6,14 +7,6 @@ def main_prompts(prompt):
     if "exit" in prompt or "out" in prompt:
         print("Thank you for using us!!\nGood Bye!!")
         sys.exit()
-
-    elif (
-        ("add" in prompt and "account" in prompt)
-        or ("make" in prompt and "account" in prompt)
-        or ("new" in prompt and "account" in prompt)
-        or ("add" in prompt and "new" in prompt)
-    ):
-        pass
 
     elif (
         ("account" in prompt and "detail" in prompt)
@@ -84,3 +77,8 @@ def main_prompts(prompt):
 
     else:
         pass
+
+
+if __name__ == "__main__":
+    print("OOPS came in wrong place!!\nGo to main.py")
+    exit()
