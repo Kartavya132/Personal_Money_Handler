@@ -6,11 +6,11 @@ from sys import exit
 def main():
     fnf.load_data()
     while True:
-        pro = input("Do you account : ").lower().strip()
+        pro = input("Do you have account : ").lower().strip()
         if ("yes" in pro) or ("yaah" in pro) or ("have" in pro and not "not" in pro):
             while True:
                 print("\n===============================")
-                print("---Welcomce to moeny handler---")
+                print("---Welcomce to money handler---")
                 print("===============================\n")
                 ch = input("What do you want : ")
                 pt.main_prompts(ch)
@@ -21,7 +21,7 @@ def main():
             or ("never" in pro)
         ):
             print("\n===============================")
-            print("---Welcomce to moeny handler---")
+            print("---Welcomce to money handler---")
             print("===============================\n")
             fnf.add_acc()
         elif "exit" in pro or "out" in pro:

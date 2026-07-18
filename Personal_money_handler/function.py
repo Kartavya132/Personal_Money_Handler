@@ -1,65 +1,45 @@
-import pandas as pd
-from pathlib import Path
-from main import *
+import datetime
 import random
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-acc_data = pd.DataFrame(
-    columns=["ID", "acc", "name", "password", "profession", "total_m"]
-)
-money_data = pd.DataFrame()
-target_data = pd.DataFrame()
+import pandas as pd
+
+from . import data as dt
+
+acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
+money_data = dt.empty_frame()
+target_data = dt.empty_frame()
 
 
-def load_data():
+def load():
     global acc_data, money_data, target_data
-
-    acc_path = DATA_DIR / "account.csv"
-    money_path = DATA_DIR / "money.csv"
-    target_path = DATA_DIR / "target.csv"
-
-    if acc_path.exists() and acc_path.stat().st_size > 0:
-        acc_data = pd.read_csv(acc_path)
-    else:
-        acc_data = pd.DataFrame(
-            columns=["ID", "acc", "name", "password", "profession", "total_m"]
-        )
-
-    if money_path.exists() and money_path.stat().st_size > 0:
-        money_data = pd.read_csv(money_path)
-    else:
-        money_data = pd.DataFrame()
-
-    if target_path.exists() and target_path.stat().st_size > 0:
-        target_data = pd.read_csv(target_path)
-    else:
-        target_data = pd.DataFrame()
-
+    acc_data, money_data, target_data = dt.load_data()
     return acc_data, money_data, target_data
 
 
 def add_acc():
     global acc_data
-
     if not isinstance(acc_data, pd.DataFrame):
-        acc_data = pd.DataFrame(
-            columns=["ID", "acc", "name", "password", "profession", "total_m"]
-        )
+        acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
 
-    for column in ["acc", "name", "password", "profession", "total_m"]:
+    for column in [
+        "acc",
+        "name",
+        "password",
+        "profession",
+        "total_m",
+        "created_on",
+        "steps",
+    ]:
         if column not in acc_data.columns:
             acc_data[column] = pd.Series(dtype="object")
 
-    characters = "abcdefghijklmnopqrstuvwxyz"
-    characters += characters.upper()
+    characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     acc = (
         random.choice(characters)
         + str(random.randint(0, 9))
         + str(random.randint(0, 9))
     )
     existing_accounts = {str(value) for value in acc_data["acc"].astype(str).tolist()}
-
     while acc in existing_accounts:
         acc = (
             random.choice(characters)
@@ -79,15 +59,16 @@ def add_acc():
         print("Incorrect password")
 
     while True:
-        prof = input("Enter your proffession : ")
+        prof = input("Enter your profession : ")
         if prof:
             break
-        else:
-            print("Enter the valid value.")
+        print("Enter the valid value.")
 
     while True:
         try:
             total_ammount = int(input("Enter the total ammount of money : "))
+            if not total_ammount:
+                total_ammount = 100
             break
         except ValueError:
             print("Enter the integer")
@@ -99,15 +80,53 @@ def add_acc():
         "password": password,
         "profession": prof,
         "total_m": total_ammount,
+        "created_on": datetime.datetime.now(),
+        "steps": 0,
     }
-    acc_path = DATA_DIR / "account.csv"
-    acc_data.to_csv(acc_path, index=False)
-    print(acc)
+    dt.save_account(acc_data)
+    print(f"Your account no. ::- {acc}")
     return acc_data
 
 
 def chan_acc():
-    pass
+    global acc_data
+    if acc_data.empty:
+        print("No account found")
+        return acc_data
+
+    target_acc = input("Enter account no. to change : ").strip()
+    row = acc_data[acc_data["acc"].astype(str) == target_acc]
+    if row.empty:
+        print("Account not found")
+        return acc_data
+
+    field = (
+        input("Enter field to change (name/password/profession/total_m) : ")
+        .strip()
+        .lower()
+    )
+    mapping = {
+        "name": "name",
+        "password": "password",
+        "profession": "profession",
+        "total_m": "total_m",
+    }
+    if field not in mapping:
+        print("Wrong field")
+        return acc_data
+
+    value = input(f"Enter new {field} : ")
+    if field == "total_m":
+        try:
+            value = int(value)
+        except ValueError:
+            print("Enter the integer")
+            return acc_data
+
+    acc_data.loc[row.index[0], mapping[field]] = value
+    dt.save_account(acc_data)
+    print("Account updated")
+    return acc_data
 
 
 def inp_salary():
@@ -156,3 +175,8 @@ def total_track():
 
 def show_total_plot():
     pass
+
+
+if __name__ == "__main__":
+    print("OOPS came in wrong file!!\nGo to main.py to run the program")
+    exit()
