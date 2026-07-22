@@ -49,7 +49,7 @@ def main_prompts(prompt):
         or ("edit" in prompt and "account" in prompt)
         or ("edit" in prompt)
     ):
-        pass
+        fnf.chan_acc()
 
     elif "goal" in prompt or "target" in prompt:
         pass

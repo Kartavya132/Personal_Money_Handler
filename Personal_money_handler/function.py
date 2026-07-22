@@ -6,6 +6,7 @@ from . import data as dt
 acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
 money_data = dt.empty_frame(dt.MONEY_COLUMNS)
 target_data = dt.empty_frame()
+current_acc = None
 
 
 def load():
@@ -38,18 +39,15 @@ def add_acc():
     global acc_data, money_data
     if not isinstance(acc_data, pd.DataFrame):
         acc_data = dt.empty_frame(dt.ACCOUNT_COLUMNS)
+    if not isinstance(money_data, pd.DataFrame):
+        money_data = dt.empty_frame(dt.MONEY_COLUMNS)
 
-    for column in [
-        "acc",
-        "name",
-        "password",
-        "profession",
-        "total_m",
-        "created_on",
-        "steps",
-    ]:
+    for column in dt.ACCOUNT_COLUMNS:
         if column not in acc_data.columns:
             acc_data[column] = pd.Series(dtype="object")
+    for column in dt.MONEY_COLUMNS:
+        if column not in money_data.columns:
+            money_data[column] = pd.Series(dtype="object")
 
     characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     acc = (
@@ -116,8 +114,88 @@ def add_acc():
 
 
 def chan_acc():
-    global acc_data
-    pass
+    global acc_data, money_data, current_acc
+    if current_acc is None:
+        print("Sign in to an account before changing it")
+        return acc_data
+
+    account_mask = acc_data["acc"].astype(str) == str(current_acc)
+    if not account_mask.any():
+        print("Account not found")
+        return acc_data
+
+    checks = (
+        input("Enter what you want to change (name/password/profession/total_m) :- ")
+        .strip()
+        .lower()
+    )
+
+    if checks == "name":
+        name = input("Enter other name : ").strip()
+        while not name:
+            name = input("Enter your proper name : ").strip()
+        column, value = "name", name
+    elif checks == "password":
+        while True:
+            password = input("Enter what new password you want : ")
+            confirm_password = input("Retype the new password : ")
+            if password == confirm_password:
+                break
+            print("Incorrect password")
+        column, value = "password", password
+    elif checks == "profession":
+        while True:
+            prof = input("Enter your profession : ")
+            if prof:
+                break
+            print("Enter the valid value.")
+        column, value = "profession", prof
+    elif checks in {"total_m", "total", "amount", "ammount"}:
+        while True:
+            try:
+                total_ammount = int(input("Enter the total ammount of money : "))
+                if not total_ammount:
+                    total_ammount = 100
+                break
+            except ValueError:
+                print("Enter the integer")
+        column, value = "total_m", total_ammount
+    else:
+        print("Enter name, password, profession, or total_m")
+        return acc_data
+
+    row_index = acc_data.index[account_mask][0]
+    acc_data.loc[row_index, column] = value
+
+    if column == "total_m":
+        current_step = pd.to_numeric(acc_data.loc[row_index, "steps"], errors="coerce")
+        next_step = int(current_step) + 1 if pd.notna(current_step) else 1
+        acc_data.loc[row_index, "steps"] = next_step
+        dt.save_account(acc_data)
+        step = 0
+        for i in range(0, len(money_data)):
+            if (
+                money_data.loc(i, "acc") == str(current_step)
+                and money_data.loc(i, "type") == "total"
+            ):
+                step += 1
+        for money_column in dt.MONEY_COLUMNS:
+            if money_column not in money_data.columns:
+                money_data[money_column] = pd.Series(dtype="object")
+        money_data.loc[len(money_data)] = {
+            "ID": len(money_data) + 1,
+            "acc": current_acc,
+            "type": "total",
+            "date": datetime.datetime.now(),
+            "steps": step,
+            "ammount": value,
+        }
+        dt.save_money(money_data)
+    else:
+        dt.save_account(acc_data)
+
+    print("Account updated")
+    return acc_data
 
 
 def delete_acc():
