@@ -172,13 +172,6 @@ def chan_acc():
         next_step = int(current_step) + 1 if pd.notna(current_step) else 1
         acc_data.loc[row_index, "steps"] = next_step
         dt.save_account(acc_data)
-        step = 0
-        for i in range(0, len(money_data)):
-            if (
-                money_data.loc(i, "acc") == str(current_step)
-                and money_data.loc(i, "type") == "total"
-            ):
-                step += 1
         for money_column in dt.MONEY_COLUMNS:
             if money_column not in money_data.columns:
                 money_data[money_column] = pd.Series(dtype="object")
@@ -187,7 +180,7 @@ def chan_acc():
             "acc": current_acc,
             "type": "total",
             "date": datetime.datetime.now(),
-            "steps": step,
+            "steps": next_step,
             "ammount": value,
         }
         dt.save_money(money_data)
@@ -199,7 +192,40 @@ def chan_acc():
 
 
 def delete_acc():
-    pass
+    global current_acc, acc_data, money_data
+    if current_acc is None:
+        print("Sign in to an account before changing it")
+        return acc_data
+
+    if "acc" not in acc_data.columns:
+        print("Account not found")
+        return acc_data
+
+    account_mask = acc_data["acc"].astype(str) == str(current_acc)
+    if not account_mask.any():
+        print("Account not found")
+        return acc_data
+
+    choice = input("Do you want to Delete : ")
+
+    if "yes" in choice or "yaah" in choice or "probably" in choice:
+        ch_pass = input("Enter your password : ")
+        saved_password = acc_data.loc[account_mask, "password"].values[0]
+        if ch_pass == saved_password:
+            acc_data = acc_data.loc[~account_mask].reset_index(drop=True)
+            if "acc" in money_data.columns:
+                money_mask = money_data["acc"].astype(str) == str(current_acc)
+                money_data = money_data.loc[~money_mask].reset_index(drop=True)
+            dt.save_account(acc_data)
+            dt.save_money(money_data)
+            current_acc = None
+            print("Account entry both are deleted deleted")
+        else:
+            print("Incorrect password")
+    else:
+        print("Account not deleted")
+
+    return acc_data
 
 
 if __name__ == "__main__":

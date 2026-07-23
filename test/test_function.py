@@ -123,3 +123,54 @@ def test_changing_name_does_not_increase_steps(tmp_path, monkeypatch):
     saved_accounts = pd.read_csv(data_dir / "account.csv")
     assert saved_accounts.iloc[0]["name"] == "Bob"
     assert saved_accounts.iloc[0]["steps"] == 1
+
+
+def test_delete_acc_removes_account_and_matching_money_rows(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    monkeypatch.setattr(dt, "DATA_DIR", data_dir)
+    fnf.acc_data = pd.DataFrame(
+        [
+            {
+                "ID": 1,
+                "acc": "A01",
+                "name": "Alice",
+                "password": "secret",
+                "profession": "Engineer",
+                "total_m": 1000,
+                "created_on": "2026-01-01",
+                "steps": 1,
+            }
+        ]
+    )
+    fnf.money_data = pd.DataFrame(
+        [
+            {
+                "ID": 1,
+                "acc": "A01",
+                "type": "total",
+                "date": "2026-01-01",
+                "steps": 1,
+                "ammount": 1000,
+            },
+            {
+                "ID": 2,
+                "acc": "A02",
+                "type": "total",
+                "date": "2026-01-02",
+                "steps": 1,
+                "ammount": 2000,
+            },
+        ]
+    )
+    fnf.current_acc = "A01"
+    answers = iter(["yes", "secret"])
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(answers))
+
+    fnf.delete_acc()
+
+    saved_accounts = pd.read_csv(data_dir / "account.csv")
+    saved_money = pd.read_csv(data_dir / "money.csv")
+    assert saved_accounts.empty
+    assert len(saved_money) == 1
+    assert saved_money.iloc[0]["acc"] == "A02"

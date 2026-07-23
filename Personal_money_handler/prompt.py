@@ -41,8 +41,16 @@ def main_prompts(prompt):
         or ("remove" in prompt and "account" in prompt)
         or ("vanish" in prompt and "account" in prompt)
     ):
+        fnf.delete_acc()
+    elif (
+        ("delete" in prompt and "entry" in prompt)
+        or ("remove" in prompt and "entry" in prompt)
+        or ("vanish" in prompt and "entry" in prompt)
+        or ("delete" in prompt and "saves" in prompt)
+        or ("remove" in prompt and "saves" in prompt)
+        or ("vanish" in prompt and "saves" in prompt)
+    ):
         pass
-
     elif (
         ("change" in prompt and "account" in prompt)
         or ("renew" in prompt and "account" in prompt)
