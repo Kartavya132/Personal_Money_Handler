@@ -50,18 +50,7 @@ def main_prompts(prompt):
         or ("remove" in prompt and "saves" in prompt)
         or ("vanish" in prompt and "saves" in prompt)
     ):
-        pass
-    elif (
-        ("change" in prompt and "account" in prompt)
-        or ("renew" in prompt and "account" in prompt)
-        or ("edit" in prompt and "account" in prompt)
-        or ("edit" in prompt)
-    ):
-        fnf.chan_acc()
-
-    elif "goal" in prompt or "target" in prompt:
-        pass
-
+        fnf.delete_entry()
     elif (
         (
             "total" in prompt
@@ -81,6 +70,17 @@ def main_prompts(prompt):
         or ("renew" in prompt and "total" in prompt and "value" in prompt)
         or ("add" in prompt and "total" in prompt and "value" in prompt)
     ):
+        fnf.edit_total_money()
+
+    elif (
+        ("change" in prompt and "account" in prompt)
+        or ("renew" in prompt and "account" in prompt)
+        or ("edit" in prompt and "account" in prompt)
+        or ("edit" in prompt)
+    ):
+        fnf.chan_acc()
+
+    elif "goal" in prompt or "target" in prompt:
         pass
 
     else:

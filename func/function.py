@@ -228,6 +228,87 @@ def delete_acc():
     return acc_data
 
 
+def delete_entry():
+    global acc_data, money_data, current_acc
+    if current_acc is None:
+        print("Sign in to an account before changing it")
+        return acc_data
+
+    if "acc" not in acc_data.columns:
+        print("Account not found")
+        return acc_data
+
+    account_mask = acc_data["acc"].astype(str) == str(current_acc)
+    if not account_mask.any():
+        print("Account not found")
+        return acc_data
+    choice = (
+        input("Delete all money entries for this account? (yes/no): ").strip().lower()
+    )
+
+    if choice in {"yes", "yeah", "yaah", "y", "probably"}:
+        ch_pass = input("Enter your password : ")
+        saved_password = acc_data.loc[account_mask, "password"].values[0]
+        if ch_pass == saved_password:
+            if "acc" in money_data.columns:
+                money_mask = money_data["acc"].astype(str) == str(current_acc)
+                money_data = money_data.loc[~money_mask].reset_index(drop=True)
+            dt.save_money(money_data)
+            print("Money entries deleted")
+        else:
+            print("Incorrect password")
+    else:
+        print("Entry not deleted")
+
+    return money_data
+
+
+def edit_total_money():
+    global acc_data, money_data, current_acc
+    if current_acc is None:
+        print("Sign in to an account before changing it")
+        return acc_data
+
+    account_mask = acc_data["acc"].astype(str) == str(current_acc)
+    if not account_mask.any():
+        print("Account not found")
+        return acc_data
+
+    while True:
+        try:
+            total_ammount = int(input("Enter the total ammount of money : "))
+            if total_ammount == 0:
+                total_ammount = 100
+            break
+        except ValueError:
+            print("Enter the integer")
+
+    row_index = acc_data.index[account_mask][0]
+    current_step = pd.to_numeric(acc_data.loc[row_index, "steps"], errors="coerce")
+    next_step = int(current_step) + 1 if pd.notna(current_step) else 1
+
+    acc_data.loc[row_index, "total_m"] = total_ammount
+    acc_data.loc[row_index, "steps"] = next_step
+    dt.save_account(acc_data)
+
+    for money_column in dt.MONEY_COLUMNS:
+        if money_column not in money_data.columns:
+            money_data[money_column] = pd.Series(dtype="object")
+
+    money_data.loc[len(money_data)] = {
+        "ID": len(money_data) + 1,
+        "acc": current_acc,
+        "type": "total",
+        "date": datetime.datetime.now(),
+        "steps": next_step,
+        "ammount": total_ammount,
+    }
+    dt.save_money(money_data)
+
+    print("Total money updated")
+    return acc_data
+
+
 if __name__ == "__main__":
     print("OOPS came in wrong file!!\nGo to main.py to run the program")
     exit()

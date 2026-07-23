@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Personal_money_handler import data
+from func import data
 
 
 def test_load_csv_returns_requested_columns_for_missing_file(tmp_path):

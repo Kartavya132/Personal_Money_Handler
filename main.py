@@ -1,5 +1,5 @@
-import Personal_money_handler.prompt as pt
-import Personal_money_handler.function as fnf
+import func.prompt as pt
+import func.function as fnf
 from sys import exit
 
 
